@@ -82,7 +82,8 @@ public class StudentPhotoRestController {
         // Log successful response
         log.info("Successfully deleted student photo with ID: {}", id);
 
-        return ResponseEntity.ok().build();
+        Object response = ApiResponseUtil.successResponse("Successfully deleted student photo.", null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

@@ -55,15 +55,9 @@ public class CourseServiceImpl implements CourseService {
                     return new NotFoundErrorException("Course with ID '" + id + "' not found.");
                 });
 
-        if (!course.getCode().equalsIgnoreCase(courseRequest.getCode()) &&
-                courseRepository.existsByCode(courseRequest.getCode())) {
-            log.warn("Course with name '{}' already exists.", courseRequest.getCode());
-            throw new DuplicateResourceException("Course with code '" + courseRequest.getCode() + "' already exists.");
-        }
-
-       courseHandlerService.convertCourseRequestToCourse(courseRequest);
-        Course updatedCourse = courseRepository.save(course);
-        return courseHandlerService.convertCourseToCourseResponse(updatedCourse);
+        course.setCode(courseRequest.getCode());
+        course.setTitle(courseRequest.getTitle());
+        return courseHandlerService.convertCourseToCourseResponse(courseRepository.save(course));
     }
 
     @Override

@@ -40,8 +40,6 @@ public class StudentPhotoHandlerService {
         }
     }
 
-
-
     public void validateFileUpload(MultipartFile[] files) {
         //upload file to server
         if (files.length == 0) {

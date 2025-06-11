@@ -39,9 +39,6 @@ public class StudentRequest {
     @NotBlank(message = "Address is required")
     private String address;
 
-    @JsonProperty("enrollment_date")
-    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Enrollment date must be in the format YYYY-MM-DD")
-    private String enrollmentDate;
 
     @JsonProperty("department_id")
     @NotNull(message = "Department ID is required")

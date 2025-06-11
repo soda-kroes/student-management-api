@@ -32,6 +32,7 @@ public class EnrollmentHandlerService {
                 .id(enrollment.getId())
                 .grade(enrollment.getGrade())
                 .course(enrollment.getCourse())
+                .enrollmentDate(enrollment.getEnrollmentDate() != null ? enrollment.getEnrollmentDate().toString() : null)
                 .build();
     }
 }

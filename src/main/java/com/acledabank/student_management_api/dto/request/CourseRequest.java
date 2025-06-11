@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class CourseRequest {
 
-    @JsonProperty("course_code")
+    @JsonProperty("code")
     @NotBlank(message = "Code is required")
     private String code;
 

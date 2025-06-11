@@ -94,7 +94,7 @@ public class StudentPhotoServiceImpl implements StudentPhotoService {
         Optional<StudentPhoto> studentPhoto = studentPhotoRepository.findById(id);
         if (studentPhoto.isEmpty()) {
             log.info("Student Photo with id {} not found in DB.", id);
-            throw new NotFoundErrorException("Student Photo With Id " + id + "not found.");
+            throw new NotFoundErrorException("Student Photo With Id " + id + " not found.");
         }
         studentPhotoRepository.deleteById(id);
     }
