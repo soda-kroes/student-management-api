@@ -60,6 +60,12 @@
             <version>21.9.0.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>11.2.1.jre17</version> <!-- Use the latest version -->
+        </dependency>
+
 
         <!-- Swagger/OpenAPI 3 -->
         <dependency>
