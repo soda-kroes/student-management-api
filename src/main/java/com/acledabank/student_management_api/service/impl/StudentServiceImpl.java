@@ -5,6 +5,7 @@ import com.acledabank.student_management_api.dto.request.EnrollmentRequest;
 import com.acledabank.student_management_api.dto.request.StudentRequest;
 import com.acledabank.student_management_api.dto.response.FakeApiResponse;
 import com.acledabank.student_management_api.dto.response.StudentResponse;
+import com.acledabank.student_management_api.enums.StudentStatus;
 import com.acledabank.student_management_api.exception.DuplicateResourceException;
 import com.acledabank.student_management_api.exception.NotFoundErrorException;
 import com.acledabank.student_management_api.model.Course;
@@ -125,7 +126,7 @@ public class StudentServiceImpl implements StudentService {
         student.setEmail(studentRequest.getEmail());
         student.setPhone(studentRequest.getPhone());
         student.setAddress(studentRequest.getAddress());
-        student.setStatus(Constant.ACTIVE);
+        student.setStatus(StudentStatus.valueOf(Constant.ACTIVE));
         student.setDob(DateTimeUtil.convertStringToDate(studentRequest.getDob()));
         student.setDepartment(department);
 

@@ -1,6 +1,7 @@
 package com.acledabank.student_management_api.service.handler;
 
 import com.acledabank.student_management_api.dto.response.FakeApiResponse;
+import com.acledabank.student_management_api.util.JsonLogger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +29,7 @@ public class ThirdPartyApiHandlerService {
                     .collectList()                     // Collect into List<FakeApiResponse>
                     .block();                         // Blocking call for simplicity
 
-            log.info("Response from API: {}", response);
+            log.info("Response from API: {}", JsonLogger.toJson(response));
 
             return response;
 

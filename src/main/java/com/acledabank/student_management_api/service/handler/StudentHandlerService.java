@@ -4,6 +4,7 @@ import com.acledabank.student_management_api.constan.Constant;
 import com.acledabank.student_management_api.dto.request.EnrollmentRequest;
 import com.acledabank.student_management_api.dto.request.StudentRequest;
 import com.acledabank.student_management_api.dto.response.*;
+import com.acledabank.student_management_api.enums.StudentStatus;
 import com.acledabank.student_management_api.model.Department;
 import com.acledabank.student_management_api.model.Enrollment;
 import com.acledabank.student_management_api.model.Student;
@@ -56,7 +57,7 @@ public class StudentHandlerService {
         student.setEmail(studentRequest.getEmail());
         student.setPhone(studentRequest.getPhone());
         student.setAddress(studentRequest.getAddress());
-        student.setStatus(Constant.ACTIVE);
+        student.setStatus(StudentStatus.valueOf(Constant.ACTIVE));
         student.setDob(DateTimeUtil.convertStringToDate(studentRequest.getDob()));
 
         if (department != null) {
@@ -68,7 +69,6 @@ public class StudentHandlerService {
         }
 
         if (student.getId() == null) {
-            student.setEnrollmentDate(LocalDateTime.now());
             student.setCreatedAt(LocalDateTime.now());
             student.setCreatedBy(Constant.SYSTEM);
         } else {
@@ -124,7 +124,7 @@ public class StudentHandlerService {
                 .phone(student.getPhone())
                 .dob(convertDateToString(student.getDob()))
                 .address(student.getAddress())
-                .status(student.getStatus())
+                .status(String.valueOf(student.getStatus()))
                 .department(departmentResponse)
                 .enrollments(enrollmentResponses)
                 .thirdPartyApiResponse(fakeApiResponse)

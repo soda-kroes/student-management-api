@@ -1,10 +1,9 @@
 package com.acledabank.student_management_api.model;
 
+import com.acledabank.student_management_api.enums.StudentStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,19 +17,24 @@ public class Student extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "student_code", unique = true, nullable = false)
     private String studentCode;
 
+    @Column(name = "first_name")
     private String firstName;
+
+    @Column(name = "last_name")
     private String lastName;
+
     private String gender;
     @Temporal(TemporalType.DATE)
     private Date dob = new Date();
+
     private String email;
     private String phone;
     private String address;
-    private LocalDateTime enrollmentDate;
-    private String status;
+
+    private StudentStatus status;
 
     // Many-to-One: Student belongs to one Department
     @ManyToOne
