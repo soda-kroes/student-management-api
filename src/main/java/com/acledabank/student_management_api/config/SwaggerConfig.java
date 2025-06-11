@@ -34,7 +34,7 @@ public class SwaggerConfig {
                         .email("support@acledabank.com")
                         .url("https://www.acledabank.com.kh"))
                 .license(new License()
-                        .name("Kroes Soda Develop")
+                        .name("Kroes Soda Development Portal")
                         .url("https://kroes-soda.vercel.app/"));
     }
 
