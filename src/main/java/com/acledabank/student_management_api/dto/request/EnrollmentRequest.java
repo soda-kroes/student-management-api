@@ -23,4 +23,5 @@ public class EnrollmentRequest {
 
     @Pattern(regexp = "A|B|C|D|F", message = "Grade must be one of A, B, C, D, or F")
     private String grade;
+
 }

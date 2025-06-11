@@ -1,7 +1,6 @@
 package com.acledabank.student_management_api.service.handler;
 
 import com.acledabank.student_management_api.constan.Constant;
-import com.acledabank.student_management_api.dto.request.EnrollmentRequest;
 import com.acledabank.student_management_api.dto.request.StudentRequest;
 import com.acledabank.student_management_api.dto.response.*;
 import com.acledabank.student_management_api.enums.StudentStatus;
@@ -76,6 +75,10 @@ public class StudentHandlerService {
             student.setUpdatedBy(Constant.SYSTEM);
         }
 
+        if (student.getId() == null) {
+            student.setCreatedAt(LocalDateTime.now());
+            student.setCreatedBy(Constant.SYSTEM);
+        }
         return student;
     }
 

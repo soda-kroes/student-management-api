@@ -1,5 +1,6 @@
 package com.acledabank.student_management_api.service.impl;
 
+import com.acledabank.student_management_api.constan.Constant;
 import com.acledabank.student_management_api.dto.request.DepartmentRequest;
 import com.acledabank.student_management_api.dto.response.DepartmentResponse;
 import com.acledabank.student_management_api.exception.DuplicateResourceException;
@@ -12,9 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,14 +27,15 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public DepartmentResponse create(DepartmentRequest departmentRequest) {
+        Department department = new Department();
         if (departmentRepository.existsByName(departmentRequest.getName())) {
             log.info("Department with name '{}' already exists.", departmentRequest.getName());
             throw new DuplicateResourceException("Department with name '" + departmentRequest.getName() + "' already exists.");
         }
 
-        Department dep = departmentHandlerService.convertDepartmentRequestToDepartment(departmentRequest);
-        Department department = departmentRepository.save(dep);
-        return departmentHandlerService.convertDepartmentToDepartmentResponse(department);
+        department = departmentHandlerService.convertDepartmentRequestToDepartment(departmentRequest, department);
+        Department departmentSave = departmentRepository.save(department);
+        return departmentHandlerService.convertDepartmentToDepartmentResponse(departmentSave);
     }
 
     @Override
@@ -50,9 +52,11 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new DuplicateResourceException("Department name '" + departmentRequest.getName() + "' already exists.");
         }
 
-        department.setName(departmentRequest.getName());
-        Department updatedDepartment = departmentRepository.save(department);
-        return departmentHandlerService.convertDepartmentToDepartmentResponse(updatedDepartment);
+        Department updateDepartment = departmentHandlerService.convertDepartmentRequestToDepartment(departmentRequest, department);
+        updateDepartment.setName(departmentRequest.getName());
+        updateDepartment.setUpdatedAt(LocalDateTime.now());
+        updateDepartment.setUpdatedBy(Constant.SYSTEM);
+        return departmentHandlerService.convertDepartmentToDepartmentResponse(departmentRepository.save(updateDepartment));
     }
 
     @Override

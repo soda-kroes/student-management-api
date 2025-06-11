@@ -81,12 +81,12 @@ public class StudentPhotoServiceImpl implements StudentPhotoService {
             log.info("Student photo not found.");
             throw new NotFoundErrorException("Student photo not found.");
         }
-        StudentPhoto studentPhoto = studentPhotoHandlerService.convertStudentPhotoRequestToStudentPhoto(studentPhotoRequest, studentPhotoOptional.get());
-        studentPhoto.setUpdatedAt(LocalDateTime.now());
-        studentPhoto.setUpdatedBy(Constant.SYSTEM);
+        StudentPhoto updateStudentPhoto = studentPhotoHandlerService.convertStudentPhotoRequestToStudentPhoto(studentPhotoRequest, studentPhotoOptional.get());
+        updateStudentPhoto.setUpdatedAt(LocalDateTime.now());
+        updateStudentPhoto.setUpdatedBy(Constant.SYSTEM);
 
         log.info("Updating student photo.");
-        return studentPhotoHandlerService.convertStudentPhotoToStudentPhotoResponse(studentPhotoRepository.save(studentPhoto));
+        return studentPhotoHandlerService.convertStudentPhotoToStudentPhotoResponse(studentPhotoRepository.save(updateStudentPhoto));
     }
 
     @Override

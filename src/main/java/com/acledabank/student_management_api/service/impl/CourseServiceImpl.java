@@ -1,5 +1,6 @@
 package com.acledabank.student_management_api.service.impl;
 
+import com.acledabank.student_management_api.constan.Constant;
 import com.acledabank.student_management_api.dto.request.CourseRequest;
 import com.acledabank.student_management_api.dto.response.CourseResponse;
 import com.acledabank.student_management_api.exception.DuplicateResourceException;
@@ -10,8 +11,10 @@ import com.acledabank.student_management_api.service.CourseService;
 import com.acledabank.student_management_api.service.handler.CourseHandlerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,14 +28,13 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseResponse create(CourseRequest courseRequest) {
+        Course course = new Course();
         if (courseRepository.existsByCode(courseRequest.getCode())) {
             log.warn("Course with code '{}' already exists.", courseRequest.getCode());
             throw new DuplicateResourceException("Course with code '" + courseRequest.getCode() + "' already exists.");
         }
-
-        Course course = courseHandlerService.convertCourseRequestToCourse(courseRequest);
-        Course savedCourse = courseRepository.save(course);
-        return courseHandlerService.convertCourseToCourseResponse(savedCourse);
+        course = courseHandlerService.convertCourseRequestToCourse(courseRequest, course);
+        return courseHandlerService.convertCourseToCourseResponse(courseRepository.save(course));
     }
 
     @Override
@@ -49,15 +51,18 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseResponse update(Long id, CourseRequest courseRequest) {
-        Course course = courseRepository.findById(id)
+        Course courseOpt = courseRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Course with ID '{}' not found.", id);
                     return new NotFoundErrorException("Course with ID '" + id + "' not found.");
                 });
+        Course updateCourse = courseHandlerService.convertCourseRequestToCourse(courseRequest, courseOpt);
 
-        course.setCode(courseRequest.getCode());
-        course.setTitle(courseRequest.getTitle());
-        return courseHandlerService.convertCourseToCourseResponse(courseRepository.save(course));
+        updateCourse.setCode(courseRequest.getCode());
+        updateCourse.setTitle(courseRequest.getTitle());
+        updateCourse.setUpdatedBy(Constant.SYSTEM);
+        updateCourse.setUpdatedAt(LocalDateTime.now());
+        return courseHandlerService.convertCourseToCourseResponse(courseRepository.save(updateCourse));
     }
 
     @Override

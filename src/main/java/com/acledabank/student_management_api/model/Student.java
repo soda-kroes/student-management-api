@@ -34,6 +34,7 @@ public class Student extends BaseEntity {
     private String phone;
     private String address;
 
+    @Enumerated(EnumType.STRING)
     private StudentStatus status;
 
     // Many-to-One: Student belongs to one Department

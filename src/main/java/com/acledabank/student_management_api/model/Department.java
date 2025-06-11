@@ -8,7 +8,7 @@ import java.util.List;
 @Entity
 @Table(name = "tbl_department")
 @Data
-public class Department {
+public class Department extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

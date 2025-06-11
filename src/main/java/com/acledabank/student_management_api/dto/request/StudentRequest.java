@@ -1,6 +1,7 @@
 package com.acledabank.student_management_api.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -48,5 +49,17 @@ public class StudentRequest {
 
     @JsonProperty("photo_ids")
     private List<@NotNull(message = "Student photo ID cannot be null") Long> photoIds;
+
+    @Column(name = "created_by")
+    private String createdBy;
+
+    @Column(name = "created_at", updatable = false)
+    private String createdAt;
+
+    @Column(name = "updated_by")
+    private String updatedBy;
+
+    @Column(name = "updated_at", insertable = false)
+    private String updatedAt;
 
 }

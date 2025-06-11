@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -129,6 +130,8 @@ public class StudentServiceImpl implements StudentService {
         student.setStatus(StudentStatus.valueOf(Constant.ACTIVE));
         student.setDob(DateTimeUtil.convertStringToDate(studentRequest.getDob()));
         student.setDepartment(department);
+        student.setUpdatedAt(LocalDateTime.now());
+        student.setUpdatedBy(Constant.SYSTEM);
 
         //Fix orphan removal issue
         if (student.getEnrollments() == null) {

@@ -16,7 +16,10 @@ public class User extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(name = "full_name")
     private String fullName;
+
+    @Column(name = "email",unique = true)
     private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
