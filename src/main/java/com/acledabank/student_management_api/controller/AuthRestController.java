@@ -80,7 +80,7 @@ public class AuthRestController {
 
         return new ResponseEntity<>(
                 ApiResponseUtil.successResponse("User registration successful.", authResponse),
-                HttpStatus.CREATED
+                HttpStatus.OK
         );
     }
 
