@@ -2,9 +2,9 @@ package com.acledabank.student_management_api.controller;
 
 import com.acledabank.student_management_api.dto.request.CourseRequest;
 import com.acledabank.student_management_api.dto.response.CourseResponse;
-import com.acledabank.student_management_api.utils.ApiResponseUtil;
 import com.acledabank.student_management_api.service.CourseService;
-import com.acledabank.student_management_api.utils.JsonLogger;
+import com.acledabank.student_management_api.util.ApiResponseUtil;
+import com.acledabank.student_management_api.util.JsonLogger;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -51,5 +52,43 @@ public class CourseRestController {
                 HttpStatus.OK
         );
     }
-}
 
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getCourseById(@PathVariable Long id) {
+        log.info("Request received to fetch course with ID: {}", id);
+
+        CourseResponse courseResponse = courseService.getById(id);
+
+        log.info("Fetched course: {}", JsonLogger.toJson(courseResponse));
+        return new ResponseEntity<>(
+                ApiResponseUtil.successResponse("Course retrieved successfully.", courseResponse),
+                HttpStatus.OK
+        );
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateCourse(@PathVariable Long id, @Valid @RequestBody CourseRequest courseRequest) {
+        log.info("Update course request received for ID {}: {}", id, JsonLogger.toJson(courseRequest));
+
+        CourseResponse updatedCourse = courseService.update(id, courseRequest);
+
+        log.info("Course updated successfully with ID: {}", updatedCourse.getId());
+        return new ResponseEntity<>(
+                ApiResponseUtil.successResponse("Course updated successfully.", updatedCourse),
+                HttpStatus.OK
+        );
+    }
+
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
+        log.info("Delete request received for course ID: {}", id);
+
+        courseService.delete(id);
+
+        log.info("Course with ID {} deleted successfully", id);
+        return new ResponseEntity<>(
+                ApiResponseUtil.successResponse("Course deleted successfully.", null),
+                HttpStatus.OK
+        );
+    }
+}

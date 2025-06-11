@@ -23,6 +23,6 @@ public class Enrollment {
     @JoinColumn(name = "course_id")
     private Course course;
 
-    private LocalDateTime enrollmentDate;
+    private LocalDateTime enrollmentDate = LocalDateTime.now();
     private String grade;
 }

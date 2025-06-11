@@ -37,7 +37,6 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
         var course = courseOpt.get();
 
-
         Enrollment enrollment = enrollmentHandlerService.convertEnrollmentRequestToEnrollment(enrollmentRequest, student, course);
         Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
 

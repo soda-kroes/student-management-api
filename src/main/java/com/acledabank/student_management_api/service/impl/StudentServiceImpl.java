@@ -12,17 +12,21 @@ import com.acledabank.student_management_api.model.Enrollment;
 import com.acledabank.student_management_api.model.Student;
 import com.acledabank.student_management_api.reposity.CourseRepository;
 import com.acledabank.student_management_api.reposity.DepartmentRepository;
+import com.acledabank.student_management_api.reposity.EnrollmentRepository;
 import com.acledabank.student_management_api.reposity.StudentRepository;
 import com.acledabank.student_management_api.service.StudentService;
 import com.acledabank.student_management_api.service.handler.StudentHandlerService;
+import com.acledabank.student_management_api.service.handler.StudentPhotoHandlerService;
 import com.acledabank.student_management_api.service.handler.ThirdPartyApiHandlerService;
-import com.acledabank.student_management_api.utils.DateTimeUtil;
+import com.acledabank.student_management_api.util.DateTimeUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -32,13 +36,17 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final StudentHandlerService studentHandlerService;
     private final DepartmentRepository departmentRepository;
+    private final EnrollmentRepository enrollmentRepository;
     private final CourseRepository courseRepository;
     private final ThirdPartyApiHandlerService thirdPartyApiHandlerService;
+    private final StudentPhotoHandlerService studentPhotoHandlerService;
 
 
     @Override
     public StudentResponse create(StudentRequest studentRequest) {
-        Student student = new Student();
+        if (!studentHandlerService.verifyMenuItemPhoto(studentRequest)) {
+            throw new NotFoundErrorException("Student Photo Id not found.");
+        }
 
         if (studentRepository.existsByEmail(studentRequest.getEmail())) {
             throw new DuplicateResourceException("Student with email " + studentRequest.getEmail() + " already exists.");
@@ -47,35 +55,48 @@ public class StudentServiceImpl implements StudentService {
         var department = departmentRepository.findById(studentRequest.getDepartmentId())
                 .orElseThrow(() -> new NotFoundErrorException("Department with ID " + studentRequest.getDepartmentId() + " not found."));
 
-        List<Course> courses = new ArrayList<>();
-        if (studentRequest.getCourseIds() != null && !studentRequest.getCourseIds().isEmpty()) {
-            courses = courseRepository.findAllById(studentRequest.getCourseIds());
-        }
+        Student student = new Student();
 
+        // Prepare enrollments first
         List<Enrollment> enrollments = new ArrayList<>();
         if (studentRequest.getEnrollments() != null && !studentRequest.getEnrollments().isEmpty()) {
             for (EnrollmentRequest enrollmentRequest : studentRequest.getEnrollments()) {
                 Course course = courseRepository.findById(enrollmentRequest.getCourseId())
                         .orElseThrow(() -> new NotFoundErrorException("Course not found: " + enrollmentRequest.getCourseId()));
+
                 Enrollment enrollment = new Enrollment();
                 enrollment.setCourse(course);
                 enrollment.setGrade(enrollmentRequest.getGrade());
-                enrollment.setStudent(student);
+                enrollment.setStudent(student); // not saved yet
                 enrollments.add(enrollment);
             }
         }
 
+        // Convert to student including enrollments
         student = studentHandlerService.convertStudentRequestToStudent(
-                studentRequest, student, department, courses, enrollments
+                studentRequest, student, department, enrollments
         );
 
+        student.setEnrollments(enrollments); // important: set before saving
+
+        // Save student and enrollments together (cascade)
         Student savedStudent = studentRepository.save(student);
 
-        //call to fake api use web client
+        // call to fake API
         List<FakeApiResponse> fakeApiResponses = thirdPartyApiHandlerService.makeRequestToFakeApi();
+
+        // Handle student photo files
+        Set<Long> studentPhotoIds = new HashSet<>();
+        if (studentRequest.getPhotoIds() != null) {
+            studentPhotoIds.addAll(studentRequest.getPhotoIds());
+        }
+
+        studentPhotoHandlerService.updateFileByStudentAndFileId(savedStudent, studentPhotoIds);
 
         return studentHandlerService.convertStudentToStudentResponse(savedStudent, fakeApiResponses);
     }
+
+
 
     @Override
     public StudentResponse update(Long id, StudentRequest studentRequest) {
@@ -84,11 +105,6 @@ public class StudentServiceImpl implements StudentService {
 
         var department = departmentRepository.findById(studentRequest.getDepartmentId())
                 .orElseThrow(() -> new NotFoundErrorException("Department with ID " + studentRequest.getDepartmentId() + " not found."));
-
-        List<Course> courses = new ArrayList<>();
-        if (studentRequest.getCourseIds() != null && !studentRequest.getCourseIds().isEmpty()) {
-            courses = courseRepository.findAllById(studentRequest.getCourseIds());
-        }
 
         List<Enrollment> newEnrollments = new ArrayList<>();
         if (studentRequest.getEnrollments() != null && !studentRequest.getEnrollments().isEmpty()) {
@@ -112,7 +128,6 @@ public class StudentServiceImpl implements StudentService {
         student.setStatus(Constant.ACTIVE);
         student.setDob(DateTimeUtil.convertStringToDate(studentRequest.getDob()));
         student.setDepartment(department);
-        student.setCourses(courses);
 
         //Fix orphan removal issue
         if (student.getEnrollments() == null) {

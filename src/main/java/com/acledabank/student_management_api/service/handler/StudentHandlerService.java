@@ -1,31 +1,53 @@
 package com.acledabank.student_management_api.service.handler;
 
 import com.acledabank.student_management_api.constan.Constant;
+import com.acledabank.student_management_api.dto.request.EnrollmentRequest;
 import com.acledabank.student_management_api.dto.request.StudentRequest;
 import com.acledabank.student_management_api.dto.response.*;
-import com.acledabank.student_management_api.model.Course;
 import com.acledabank.student_management_api.model.Department;
 import com.acledabank.student_management_api.model.Enrollment;
 import com.acledabank.student_management_api.model.Student;
-import com.acledabank.student_management_api.utils.DateTimeUtil;
+import com.acledabank.student_management_api.model.StudentPhoto;
+import com.acledabank.student_management_api.reposity.StudentPhotoRepository;
+import com.acledabank.student_management_api.util.DateTimeUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.acledabank.student_management_api.utils.DateTimeUtil.convertDateToString;
+import static com.acledabank.student_management_api.util.DateTimeUtil.convertDateToString;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class StudentHandlerService {
+    private final StudentPhotoRepository studentPhotoRepository;
+
+    public boolean verifyMenuItemPhoto(StudentRequest studentRequest) {
+        // Verify menu item photo
+        Set<Long> studentPhotoIds = new HashSet<>();
+        for (Long photoId : studentRequest.getPhotoIds()) {
+            studentPhotoIds.add(photoId); // Extract IDs
+        }
+        List<StudentPhoto> studentPhotos = studentPhotoRepository.findAllByIdIn(studentPhotoIds);
+        if (studentPhotos.isEmpty()) {
+            log.warn("Student photo(s) not found for IDs: {}", studentPhotoIds);
+            return false;
+        }
+
+        return true;
+    }
 
 
-    public Student convertStudentRequestToStudent(StudentRequest studentRequest, Student student, Department department, List<Course> courses, List<Enrollment> enrollments) {
+    public Student convertStudentRequestToStudent(StudentRequest studentRequest, Student student, Department department, List<Enrollment> enrollments) {
 
         student.setStudentCode(generateUniqueStudentCode());
         student.setFirstName(studentRequest.getFirstName());
@@ -41,9 +63,6 @@ public class StudentHandlerService {
             student.setDepartment(department);
         }
 
-        if (courses != null) {
-            student.setCourses(courses);
-        }
         if (enrollments != null) {
             student.setEnrollments(enrollments);
         }
@@ -78,7 +97,7 @@ public class StudentHandlerService {
                     .map(course -> CourseResponse.builder()
                             .id(course.getId())
                             .title(course.getTitle())
-                            .courseCode(course.getCourseCode())
+                            .courseCode(course.getCode())
                             .build())
                     .collect(Collectors.toList());
         }
@@ -88,7 +107,9 @@ public class StudentHandlerService {
             enrollmentResponses = student.getEnrollments().stream()
                     .map(enrollment -> EnrollmentResponse.builder()
                             .id(enrollment.getId())
+                            .course(enrollment.getCourse())
                             .enrollmentDate(enrollment.getEnrollmentDate() != null ? enrollment.getEnrollmentDate().toString() : null)
+                            .grade(enrollment.getGrade())
                             .build())
                     .collect(Collectors.toList());
         }
@@ -103,10 +124,9 @@ public class StudentHandlerService {
                 .phone(student.getPhone())
                 .dob(convertDateToString(student.getDob()))
                 .address(student.getAddress())
-                .enrollmentDate(student.getEnrollmentDate() != null ? student.getEnrollmentDate().toLocalDate() : null)
                 .status(student.getStatus())
                 .department(departmentResponse)
-                .courses(courseResponses)
+                .enrollments(enrollmentResponses)
                 .thirdPartyApiResponse(fakeApiResponse)
                 .build();
     }

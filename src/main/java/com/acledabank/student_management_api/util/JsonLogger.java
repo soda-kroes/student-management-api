@@ -1,12 +1,9 @@
-package com.acledabank.student_management_api.utils;
+package com.acledabank.student_management_api.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.LoggerFactory;
-
-import java.util.logging.Logger;
 
 @Slf4j
 public class JsonLogger {

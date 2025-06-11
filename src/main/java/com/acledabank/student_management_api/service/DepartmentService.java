@@ -7,5 +7,8 @@ import java.util.List;
 
 public interface DepartmentService {
     DepartmentResponse create (DepartmentRequest departmentRequest);
+    DepartmentResponse update (Long id, DepartmentRequest departmentRequest);
     List<DepartmentResponse> getAll ();
+    DepartmentResponse getById(Long id);
+    void delete(Long id);
 }

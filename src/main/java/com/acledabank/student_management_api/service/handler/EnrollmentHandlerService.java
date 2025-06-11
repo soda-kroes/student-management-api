@@ -30,7 +30,6 @@ public class EnrollmentHandlerService {
     public EnrollmentResponse convertEnrollmentToEnrollmentResponse(Enrollment enrollment) {
         return EnrollmentResponse.builder()
                 .id(enrollment.getId())
-                .student(enrollment.getStudent())
                 .grade(enrollment.getGrade())
                 .course(enrollment.getCourse())
                 .build();

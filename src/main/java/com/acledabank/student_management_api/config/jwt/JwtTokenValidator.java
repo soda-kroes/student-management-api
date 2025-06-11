@@ -2,7 +2,7 @@ package com.acledabank.student_management_api.config.jwt;
 
 import com.acledabank.student_management_api.constan.Constant;
 import com.acledabank.student_management_api.exception.EmptyResponse;
-import com.acledabank.student_management_api.utils.ApiResponseUtil;
+import com.acledabank.student_management_api.util.ApiResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

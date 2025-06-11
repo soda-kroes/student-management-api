@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "tbl_student")
@@ -48,6 +49,11 @@ public class Student extends BaseEntity {
     // One-to-Many: Student has many Enrollments
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Enrollment> enrollments = new ArrayList<>();
+
+
+    // One-to-Many: Student has many Photos
+    @OneToMany(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<StudentPhoto> studentPhoto; // Fixed mappedBy and added generic type
 
 }
 

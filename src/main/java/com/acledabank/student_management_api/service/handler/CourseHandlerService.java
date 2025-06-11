@@ -10,7 +10,7 @@ public class CourseHandlerService {
 
     public Course convertCourseRequestToCourse(CourseRequest courseRequest){
         Course course = new Course();
-        course.setCourseCode(courseRequest.getCourseCode());
+        course.setCode(courseRequest.getCode());
         course.setTitle(courseRequest.getTitle());
         return course;
     }
@@ -18,7 +18,7 @@ public class CourseHandlerService {
     public CourseResponse convertCourseToCourseResponse(Course course){
         return CourseResponse.builder()
                 .id(course.getId())
-                .courseCode(course.getCourseCode())
+                .courseCode(course.getCode())
                 .title(course.getTitle())
                 .build();
 

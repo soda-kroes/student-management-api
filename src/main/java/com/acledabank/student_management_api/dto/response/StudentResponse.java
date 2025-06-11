@@ -28,15 +28,11 @@ public class StudentResponse {
     private String email;
     private String phone;
     private String address;
-    private LocalDate enrollmentDate;
     private String status;
-    private String grade;
-
+    private DepartmentResponse department;
+    private List<EnrollmentResponse> enrollments;
     @JsonProperty("third_party_api_response")
     private List<FakeApiResponse> thirdPartyApiResponse;
 
-    private DepartmentResponse department;
-
-    private List<CourseResponse> courses;
 
 }

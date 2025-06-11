@@ -1,4 +1,4 @@
-package com.acledabank.student_management_api.utils;
+package com.acledabank.student_management_api.util;
 
 
 import com.acledabank.student_management_api.dto.response.ApiResponseEntityDto;

@@ -8,8 +8,8 @@ import lombok.Data;
 public class CourseRequest {
 
     @JsonProperty("course_code")
-    @NotBlank(message = "Course Code is required")
-    private String courseCode;
+    @NotBlank(message = "Code is required")
+    private String code;
 
     @NotBlank(message = "Title is required")
     private String title;

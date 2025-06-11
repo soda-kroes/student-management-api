@@ -22,11 +22,11 @@ public class JwtProvider {
         Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
         String roles = populateAuthorities(authorities);
 
-//        Date expiration = new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000); // 1 day in milliseconds
+        Date expiration = new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000); // 1 day in milliseconds
 //        Date expiration = new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000); // 7 days in milliseconds
 
 
-        Date expiration = new Date(System.currentTimeMillis() + 60 * 1000); // 1 minute in milliseconds
+//        Date expiration = new Date(System.currentTimeMillis() + 60 * 1000); // 1 minute in milliseconds
 
         String jwt = Jwts.builder().setIssuedAt(new Date())
                 .setExpiration(expiration)

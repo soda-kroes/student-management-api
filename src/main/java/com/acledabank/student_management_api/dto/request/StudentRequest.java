@@ -12,9 +12,6 @@ import java.util.List;
 @Data
 public class StudentRequest {
 
-    private Long id;
-
-
     @JsonProperty("first_name")
     @NotBlank(message = "First name is required")
     private String firstName;
@@ -28,6 +25,7 @@ public class StudentRequest {
     private String gender;
 
     @NotBlank(message = "Date of birth is required")
+    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Date of birth must be in the format YYYY-MM-DD")
     private String dob;
 
     @Email(message = "Email should be valid")
@@ -35,22 +33,23 @@ public class StudentRequest {
     private String email;
 
     @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "\\+?[0-9]{7,15}", message = "Phone number must be valid and contain only digits (optionally starting with +)")
     private String phone;
 
     @NotBlank(message = "Address is required")
     private String address;
 
     @JsonProperty("enrollment_date")
+    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Enrollment date must be in the format YYYY-MM-DD")
     private String enrollmentDate;
-
 
     @JsonProperty("department_id")
     @NotNull(message = "Department ID is required")
     private Long departmentId;
 
-    @JsonProperty("course_ids")
-    private List<Long> courseIds;
+    private List<@NotNull EnrollmentRequest> enrollments;
 
-    private List<EnrollmentRequest> enrollments;
+    @JsonProperty("photo_ids")
+    private List<@NotNull(message = "Student photo ID cannot be null") Long> photoIds;
 
 }

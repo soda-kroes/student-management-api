@@ -2,9 +2,9 @@ package com.acledabank.student_management_api.controller;
 
 import com.acledabank.student_management_api.dto.request.DepartmentRequest;
 import com.acledabank.student_management_api.dto.response.DepartmentResponse;
-import com.acledabank.student_management_api.utils.ApiResponseUtil;
 import com.acledabank.student_management_api.service.DepartmentService;
-import com.acledabank.student_management_api.utils.JsonLogger;
+import com.acledabank.student_management_api.util.ApiResponseUtil;
+import com.acledabank.student_management_api.util.JsonLogger;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -51,5 +52,44 @@ public class DepartmentRestController {
                 HttpStatus.OK
         );
     }
-}
 
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getDepartmentById(@PathVariable Long id) {
+        log.info("Request received to fetch department with ID: {}", id);
+
+        DepartmentResponse departmentResponse = departmentService.getById(id);
+
+        log.info("Department found with ID: {}", departmentResponse.getId());
+        return new ResponseEntity<>(
+                ApiResponseUtil.successResponse("Department retrieved successfully.", departmentResponse),
+                HttpStatus.OK
+        );
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartmentRequest departmentRequest) {
+        log.info("Update request received for department ID: {}", id);
+        log.debug("Update request body: {}", JsonLogger.toJson(departmentRequest));
+
+        DepartmentResponse updatedDepartment = departmentService.update(id, departmentRequest);
+
+        log.info("Department with ID {} updated successfully", id);
+        return new ResponseEntity<>(
+                ApiResponseUtil.successResponse("Department updated successfully.", updatedDepartment),
+                HttpStatus.OK
+        );
+    }
+
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> deleteDepartment(@PathVariable Long id) {
+        log.info("Delete request received for department ID: {}", id);
+
+        departmentService.delete(id);
+
+        log.info("Department with ID {} deleted successfully", id);
+        return new ResponseEntity<>(
+                ApiResponseUtil.successResponse("Department deleted successfully.", null),
+                HttpStatus.OK
+        );
+    }
+}

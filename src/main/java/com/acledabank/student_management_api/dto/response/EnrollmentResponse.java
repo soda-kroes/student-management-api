@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EnrollmentResponse {
-    private Long id;
-    private Student student;
+    private Long id;;
     private Course course;
     private String enrollmentDate;
     private String grade;
