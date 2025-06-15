@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class CourseRestController {
 
     private final CourseService courseService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createNewCourse(@Valid @RequestBody CourseRequest courseRequest) {
         log.info("Create course request received: {}", JsonLogger.toJson(courseRequest));
@@ -38,6 +40,7 @@ public class CourseRestController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAllCourses() {
         log.info("Request received to fetch all courses");
@@ -53,6 +56,7 @@ public class CourseRestController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getCourseById(@PathVariable Long id) {
         log.info("Request received to fetch course with ID: {}", id);
@@ -66,6 +70,7 @@ public class CourseRestController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateCourse(@PathVariable Long id, @Valid @RequestBody CourseRequest courseRequest) {
         log.info("Update course request received for ID {}: {}", id, JsonLogger.toJson(courseRequest));
@@ -79,6 +84,7 @@ public class CourseRestController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
         log.info("Delete request received for course ID: {}", id);

@@ -2,11 +2,10 @@ package com.acledabank.student_management_api.dto.request;
 
 import com.acledabank.student_management_api.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
+
+import java.util.Set;
 
 @Data
 public class UserRequest {
@@ -25,7 +24,6 @@ public class UserRequest {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @NotNull(message = "User role is required")
-    private UserRole role = UserRole.ROLE_ADMIN;
-
+    @NotNull(message = "At least one user role is required")
+    private Set<UserRole> roles; // <-- support multiple roles
 }

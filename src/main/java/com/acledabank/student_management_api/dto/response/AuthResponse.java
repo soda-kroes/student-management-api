@@ -1,12 +1,17 @@
 package com.acledabank.student_management_api.dto.response;
 
-import com.acledabank.student_management_api.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuthResponse {
-    @JsonProperty("jwt_token")
-    private String jwtToken;
-    private UserRole role;
+    @JsonProperty("access_token")
+    private String accessToken;
+
+    @JsonProperty("refresh_token")
+    private String refreshToken;
 }

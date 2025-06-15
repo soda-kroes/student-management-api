@@ -1,6 +1,5 @@
 package com.acledabank.student_management_api.exception;
 
-
 import com.acledabank.student_management_api.dto.response.ApiResponseEntityDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -82,23 +81,6 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponseEntityDto> handleGenericException(Exception ex) {
-        log.error("Unhandled exception: {}", ex.getMessage(), ex);
-
-        var response = ApiResponseEntityDto.builder()
-                .errorCode("500")
-                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message("An internal error occurred. Please contact support.")
-                .messageDescription("Unexpected error: " + ex.getLocalizedMessage())
-                .timeStamp(LocalDateTime.now())
-                .responseData(new EmptyResponse())
-                .build();
-
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponseEntityDto> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -120,4 +102,19 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponseEntityDto> handleGenericException(Exception ex) {
+        log.error("Unhandled exception: {}", ex.getMessage(), ex);
+
+        var response = ApiResponseEntityDto.builder()
+                .errorCode("500")
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message("An internal error occurred. Please contact support.")
+                .messageDescription("Unexpected error: " + ex.getLocalizedMessage())
+                .timeStamp(LocalDateTime.now())
+                .responseData(new EmptyResponse())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

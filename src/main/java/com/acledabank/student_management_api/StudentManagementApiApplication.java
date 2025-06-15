@@ -9,10 +9,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 @SpringBootApplication
 public class StudentManagementApiApplication {
 
-//	public static void main(String[] args) {
-//		SpringApplication.run(StudentManagementApiApplication.class, args);
-//	}
-
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(StudentManagementApiApplication.class, args);
         String dbType = context.getEnvironment().getProperty("app.db-type");

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class StudentRestController {
 
     private final StudentService studentService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createStudent(@Valid @RequestBody StudentRequest studentRequest) {
         log.info("Create student request received: {}", JsonLogger.toJson(studentRequest));
@@ -38,6 +40,7 @@ public class StudentRestController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateStudent(@PathVariable Long id, @Valid @RequestBody StudentRequest studentRequest) {
         log.info("Update request received for student ID {}: {}", id, JsonLogger.toJson(studentRequest));
@@ -53,6 +56,7 @@ public class StudentRestController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getStudentById(@PathVariable(name = "id") Long id) {
         StudentResponse studentResponse = studentService.getById(id);
@@ -66,6 +70,7 @@ public class StudentRestController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAllStudents() {
         List<StudentResponse> studentResponseList = studentService.getAll();
@@ -79,6 +84,7 @@ public class StudentRestController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteStudentById(@PathVariable(name = "id") Long id) {
         studentService.delete(id);
@@ -91,4 +97,3 @@ public class StudentRestController {
         );
     }
 }
-
