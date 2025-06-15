@@ -10,9 +10,9 @@ import java.util.Set;
 @Data
 public class UserRequest {
 
-    private Long id;
 
     @NotBlank(message = "Full name is required")
+    @JsonProperty("full_name")
     private String fullName;
 
     @NotBlank(message = "Email is required")
@@ -25,5 +25,5 @@ public class UserRequest {
     private String password;
 
     @NotNull(message = "At least one user role is required")
-    private Set<UserRole> roles; // <-- support multiple roles
+    private Set<UserRole> roles;
 }
