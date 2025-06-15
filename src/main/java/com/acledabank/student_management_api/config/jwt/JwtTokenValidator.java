@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,6 +25,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtTokenValidator extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper;
@@ -34,8 +36,10 @@ public class JwtTokenValidator extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws IOException, ServletException {
 
-        // Skip validation for login, register, and refresh token endpoints
         String path = request.getRequestURI();
+        log.debug("JwtTokenValidator processing request to: {}", path);
+
+        // Skip validation for public endpoints
         if (path.startsWith("/api/v1/auth/login") ||
                 path.startsWith("/api/v1/auth/register") ||
                 path.startsWith("/api/v1/auth/refresh")) {
@@ -44,30 +48,50 @@ public class JwtTokenValidator extends OncePerRequestFilter {
         }
 
         String authHeader = request.getHeader(Constant.JWT_HEADER_KEY);
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
+        log.debug("Authorization header: {}", authHeader);
 
-            if (!jwtProvider.validateToken(token) || !jwtProvider.isAccessToken(token)) {
-                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired access token");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.warn("Missing or invalid Authorization header");
+            // You can choose to reject immediately or just continue unauthenticated:
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Authorization header missing or invalid");
+            return;
+        }
+
+        String token = authHeader.substring(7);
+        if (!jwtProvider.validateToken(token)) {
+            log.warn("JWT token validation failed");
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired access token");
+            return;
+        }
+
+        if (!jwtProvider.isAccessToken(token)) {
+            log.warn("JWT token is not an access token");
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token is not an access token");
+            return;
+        }
+
+        try {
+            Claims claims = jwtProvider.parseClaims(token);
+            String username = claims.getSubject();
+            String roles = claims.get("roles", String.class);
+
+            if (username == null || roles == null) {
+                log.warn("JWT token missing required claims");
+                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token claims");
                 return;
             }
 
-            try {
-                Claims claims = jwtProvider.parseClaims(token);
-                String username = claims.getSubject();
-                String roles = claims.get("roles", String.class);
-                if (username == null || roles == null) {
-                    sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token claims");
-                    return;
-                }
+            List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(roles);
 
-                List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(roles);
-                Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (Exception e) {
-                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "JWT token processing failed");
-                return;
-            }
+            Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            log.debug("JWT token validated successfully for user: {}", username);
+
+        } catch (Exception e) {
+            log.error("Error parsing or validating JWT token", e);
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "JWT token processing failed");
+            return;
         }
 
         filterChain.doFilter(request, response);
